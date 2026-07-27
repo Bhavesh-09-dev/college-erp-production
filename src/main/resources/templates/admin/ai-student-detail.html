@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='AI Insight Detail')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='ai-insights')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='Student AI Analysis')}"></header>
+
+        <div class="content-area">
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                        <div>
+                            <h4 th:text="${prediction.studentName}"></h4>
+                            <p class="text-muted mb-0">
+                                <span th:text="${prediction.enrollmentNo}"></span> |
+                                <span th:text="${prediction.department}"></span> |
+                                Semester <span th:text="${prediction.semester}"></span>
+                            </p>
+                        </div>
+                        <span class="badge fs-6" th:classappend="'risk-badge-' + ${prediction.overallRisk}"
+                              th:text="'Overall Risk: ' + ${prediction.overallRisk}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <div class="stat-card bg-gradient-info">
+                        <i class="bi bi-calendar-check-fill stat-icon"></i>
+                        <div class="stat-value" th:text="${prediction.attendancePercentage} + '%'">0%</div>
+                        <div class="stat-label">Attendance</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card bg-gradient-primary">
+                        <i class="bi bi-journal-check stat-icon"></i>
+                        <div class="stat-value" th:text="${prediction.averageMarks} + '%'">0%</div>
+                        <div class="stat-label">Average Marks</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card bg-gradient-success">
+                        <i class="bi bi-speedometer stat-icon"></i>
+                        <div class="stat-value" th:text="${prediction.performanceScore} + '%'">0%</div>
+                        <div class="stat-label">Performance Score</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card bg-gradient-warning">
+                        <i class="bi bi-person-x-fill stat-icon"></i>
+                        <div class="stat-value" th:text="${prediction.consecutiveAbsences}">0</div>
+                        <div class="stat-label">Recent Absences (30d)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header"><i class="bi bi-graph-up me-2"></i>Trends &amp; Predictions</div>
+                        <div class="card-body">
+                            <table class="table table-borderless mb-0">
+                                <tr>
+                                    <td>Attendance Risk Level</td>
+                                    <td class="text-end">
+                                        <span class="badge" th:classappend="'risk-badge-' + ${prediction.attendanceRisk}"
+                                              th:text="${prediction.attendanceRisk}"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Performance Category</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-primary" th:text="${prediction.performanceCategory}"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Predicted Final Grade</td>
+                                    <td class="text-end"><strong th:text="${prediction.predictedGrade}"></strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Attendance Trend</td>
+                                    <td class="text-end" th:text="${prediction.attendanceTrend}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Performance Trend</td>
+                                    <td class="text-end" th:text="${prediction.performanceTrend}"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card" th:if="${!#lists.isEmpty(prediction.warnings)}">
+                        <div class="card-header bg-danger text-white"><i class="bi bi-exclamation-octagon-fill me-2"></i>Warnings</div>
+                        <div class="card-body">
+                            <div th:each="w : ${prediction.warnings}" class="ai-warning-item" th:text="${w}"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header"><i class="bi bi-lightbulb-fill me-2"></i>AI Suggestions</div>
+                        <div class="card-body">
+                            <div th:each="s : ${prediction.suggestions}" class="ai-suggestion-item" th:text="${s}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header"><i class="bi bi-list-check me-2"></i>Subject-wise Performance</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                            <tr><th>Subject</th><th>Marks %</th><th>Attendance %</th><th>Grade</th><th>Status</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="sp : ${prediction.subjectPerformances}">
+                                <td th:text="${sp.subject}"></td>
+                                <td th:text="${sp.marksPercentage} + '%'"></td>
+                                <td th:text="${sp.attendancePercentage} + '%'"></td>
+                                <td><span class="badge" th:classappend="'badge-grade-' + ${sp.grade}" th:text="${sp.grade}"></span></td>
+                                <td>
+                                    <span class="badge" th:classappend="${sp.status == 'PASS'} ? 'bg-success' :
+                                            (${sp.status == 'AT_RISK'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                          th:text="${sp.status}"></span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <a th:href="@{/admin/ai-insights}" class="btn btn-outline-secondary mt-3">
+                <i class="bi bi-arrow-left me-1"></i> Back to AI Insights
+            </a>
+
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+</body>
+</html>

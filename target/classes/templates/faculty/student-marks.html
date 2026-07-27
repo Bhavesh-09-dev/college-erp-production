@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='Student Marks')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='marks')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='Student Marks')}"></header>
+
+        <div class="content-area">
+            <div th:replace="~{common/layout :: alerts}"></div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 th:text="${student.fullName}"></h5>
+                    <p class="text-muted mb-0">
+                        <span th:text="${student.enrollmentNo}"></span> |
+                        <span th:text="${student.department}"></span> |
+                        Semester <span th:text="${student.semester}"></span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><i class="bi bi-journal-text me-2"></i>Marks Record</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>Subject</th><th>Semester</th><th>Exam Type</th>
+                                <th>Marks</th><th>Percentage</th><th>Grade</th><th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="m : ${marks}">
+                                <td th:text="${m.subject}"></td>
+                                <td th:text="'Sem ' + ${m.semester}"></td>
+                                <td th:text="${m.examType}"></td>
+                                <td th:text="${m.marksObtained} + '/' + ${m.maxMarks}"></td>
+                                <td th:text="${#numbers.formatDecimal(m.percentage,1,1)} + '%'"></td>
+                                <td><span class="badge" th:classappend="'badge-grade-' + ${m.grade}" th:text="${m.grade}"></span></td>
+                                <td>
+                                    <span class="badge" th:classappend="${m.pass} ? 'bg-success' : 'bg-danger'"
+                                          th:text="${m.pass} ? 'PASS' : 'FAIL'"></span>
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/faculty/marks/{id}/edit(id=${m.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form th:action="@{/faculty/marks/{id}/delete(id=${m.id})}" method="post"
+                                          class="d-inline confirm-delete" data-confirm-message="Delete this marks entry?">
+                                        <input type="hidden" name="studentId" th:value="${student.id}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(marks)}">
+                                <td colspan="8" class="text-center text-muted py-3">No marks recorded yet</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <a th:href="@{/faculty/marks}" class="btn btn-outline-secondary mt-3">
+                <i class="bi bi-arrow-left me-1"></i> Back to Marks Management
+            </a>
+
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+</body>
+</html>

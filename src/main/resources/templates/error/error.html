@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${errorTitle} ?: 'Error'">Error</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="login-page">
+    <div class="login-card card" style="max-width: 480px;">
+        <div class="login-header bg-gradient-danger">
+            <i class="bi bi-exclamation-octagon-fill"></i>
+            <h3 class="mb-1" th:text="${statusCode} ?: '500'">500</h3>
+            <p class="mb-0 opacity-75" th:text="${errorTitle} ?: 'Something went wrong'">Error</p>
+        </div>
+        <div class="login-body text-center">
+            <p class="text-muted" th:text="${errorMessage} ?: 'An unexpected error occurred. Please try again later.'">
+                Error message
+            </p>
+
+            <div th:if="${validationErrors}" class="alert alert-warning text-start">
+                <ul class="mb-0">
+                    <li th:each="err : ${validationErrors}">
+                        <span th:text="${err.key}"></span>: <span th:text="${err.value}"></span>
+                    </li>
+                </ul>
+            </div>
+
+            <a href="/" class="btn btn-primary mt-3">
+                <i class="bi bi-house-fill me-2"></i>Go to Home
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

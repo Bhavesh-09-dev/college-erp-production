@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='My Profile')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='profile')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='My Profile')}"></header>
+
+        <div class="content-area">
+            <div th:replace="~{common/layout :: alerts}"></div>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="avatar-circle mx-auto mb-3" style="width:90px;height:90px;font-size:2.2rem;"
+                                 th:text="${#strings.substring(student.firstName,0,1)}">A</div>
+                            <h5 th:text="${student.fullName}"></h5>
+                            <p class="text-muted mb-1" th:text="${student.enrollmentNo}"></p>
+                            <span class="badge bg-primary" th:text="${student.department}"></span>
+                            <span class="badge bg-info" th:text="'Sem ' + ${student.semester}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-person-lines-fill me-2"></i>Profile Details</span>
+                            <a th:if="${!isEdit}" th:href="@{/student/profile/edit}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil me-1"></i>Edit Contact Info
+                            </a>
+                        </div>
+                        <div class="card-body">
+
+                            <!-- View Mode -->
+                            <div th:if="${!isEdit}" class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Enrollment Number</label>
+                                    <p th:text="${student.enrollmentNo}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Email</label>
+                                    <p th:text="${student.email}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Phone</label>
+                                    <p th:text="${student.phone ?: 'N/A'}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Date of Birth</label>
+                                    <p th:text="${student.dateOfBirth ?: 'N/A'}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Department</label>
+                                    <p th:text="${student.department}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Semester / Year</label>
+                                    <p th:text="'Semester ' + ${student.semester} + ', Year ' + ${student.academicYear}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Guardian Name</label>
+                                    <p th:text="${student.guardianName ?: 'N/A'}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Guardian Phone</label>
+                                    <p th:text="${student.guardianPhone ?: 'N/A'}"></p>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-muted small">Address</label>
+                                    <p th:text="${student.address ?: 'N/A'}"></p>
+                                </div>
+                            </div>
+
+                            <!-- Edit Mode -->
+                            <form th:if="${isEdit}" th:action="@{/student/profile}" th:object="${student}" method="post">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle-fill me-2"></i>
+                                    You can update your contact details. Academic information can only be changed by administrators.
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Phone</label>
+                                        <input type="text" class="form-control" th:field="*{phone}">
+                                        <div class="text-danger small" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Date of Birth</label>
+                                        <input type="date" class="form-control" th:field="*{dateOfBirth}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Guardian Name</label>
+                                        <input type="text" class="form-control" th:field="*{guardianName}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Guardian Phone</label>
+                                        <input type="text" class="form-control" th:field="*{guardianPhone}">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Address</label>
+                                        <textarea class="form-control" th:field="*{address}" rows="2"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-2 mt-3">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-circle me-1"></i> Save Changes
+                                    </button>
+                                    <a th:href="@{/student/profile}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-x-circle me-1"></i> Cancel
+                                    </a>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+</body>
+</html>

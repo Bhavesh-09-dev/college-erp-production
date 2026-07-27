@@ -1,0 +1,400 @@
+/* ============================================================
+   Smart College ERP Portal - Main Stylesheet
+   ============================================================ */
+
+:root {
+    --primary-color: #4361ee;
+    --primary-dark: #3a0ca3;
+    --secondary-color: #4cc9f0;
+    --success-color: #06d6a0;
+    --warning-color: #ffd166;
+    --danger-color: #ef476f;
+    --dark-color: #1d3557;
+    --light-bg: #f8f9fc;
+    --sidebar-width: 260px;
+    --topbar-height: 64px;
+    --transition: all 0.3s ease;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
+    color: #444;
+}
+
+/* ============================================================
+   Layout: Sidebar + Topbar
+   ============================================================ */
+
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(180deg, var(--dark-color) 0%, #14213d 100%);
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    transition: var(--transition);
+    z-index: 1000;
+}
+
+.sidebar .brand {
+    padding: 1.25rem 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.sidebar .brand i {
+    font-size: 1.6rem;
+    color: var(--secondary-color);
+}
+
+.sidebar .nav-link {
+    color: rgba(255,255,255,0.75);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    border-left: 3px solid transparent;
+    transition: var(--transition);
+}
+
+.sidebar .nav-link:hover {
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+}
+
+.sidebar .nav-link.active {
+    background: rgba(67,97,238,0.2);
+    color: #fff;
+    border-left-color: var(--secondary-color);
+    font-weight: 600;
+}
+
+.sidebar .nav-link i {
+    width: 22px;
+    text-align: center;
+}
+
+.sidebar .nav-section-title {
+    padding: 0.75rem 1.5rem 0.3rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.4);
+}
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    height: var(--topbar-height);
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.topbar .page-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+.content-area {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+@media (max-width: 991px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* ============================================================
+   Cards & Stat Widgets
+   ============================================================ */
+
+.stat-card {
+    border: none;
+    border-radius: 14px;
+    padding: 1.5rem;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.stat-card .stat-icon {
+    font-size: 2.5rem;
+    opacity: 0.3;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+}
+
+.stat-card .stat-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+}
+
+.stat-card .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.bg-gradient-primary { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
+.bg-gradient-success { background: linear-gradient(135deg, #06d6a0, #1b9aaa); }
+.bg-gradient-warning { background: linear-gradient(135deg, #ffd166, #f4a261); }
+.bg-gradient-danger  { background: linear-gradient(135deg, #ef476f, #b5179e); }
+.bg-gradient-info    { background: linear-gradient(135deg, #4cc9f0, #4361ee); }
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+
+.card-header {
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: 600;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* ============================================================
+   Login Page
+   ============================================================ */
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 50%, #14213d 100%);
+    padding: 1rem;
+}
+
+.login-card {
+    max-width: 420px;
+    width: 100%;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.login-card .login-header {
+    background: linear-gradient(135deg, var(--dark-color), #14213d);
+    color: #fff;
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+}
+
+.login-card .login-header i {
+    font-size: 3rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+}
+
+.login-card .login-body {
+    padding: 2rem;
+    background: #fff;
+}
+
+.demo-credentials {
+    background: #f1f5fb;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    font-size: 0.8rem;
+    margin-top: 1rem;
+}
+
+/* ============================================================
+   Tables
+   ============================================================ */
+
+.table-responsive {
+    border-radius: 10px;
+}
+
+.table thead th {
+    background: #f8f9fc;
+    border-bottom: 2px solid #e9ecef;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
+
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* ============================================================
+   Badges & Progress
+   ============================================================ */
+
+.badge-grade-O { background-color: #06d6a0 !important; }
+.badge-grade-A\+ { background-color: #06d6a0 !important; }
+.badge-grade-A { background-color: #4cc9f0 !important; }
+.badge-grade-B\+ { background-color: #4361ee !important; }
+.badge-grade-B { background-color: #ffd166 !important; color: #333 !important; }
+.badge-grade-C { background-color: #f4a261 !important; }
+.badge-grade-F { background-color: #ef476f !important; }
+
+.progress {
+    height: 10px;
+    border-radius: 6px;
+    background: #e9ecef;
+}
+
+.attendance-progress.low { background-color: var(--danger-color); }
+.attendance-progress.medium { background-color: var(--warning-color); }
+.attendance-progress.high { background-color: var(--success-color); }
+
+/* ============================================================
+   AI Insight Cards
+   ============================================================ */
+
+.risk-badge-LOW { background-color: var(--success-color) !important; }
+.risk-badge-MEDIUM { background-color: var(--warning-color) !important; color: #333 !important; }
+.risk-badge-HIGH { background-color: #f4a261 !important; }
+.risk-badge-CRITICAL { background-color: var(--danger-color) !important; }
+
+.ai-suggestion-item {
+    padding: 0.6rem 1rem;
+    border-left: 4px solid var(--primary-color);
+    background: #f8f9fc;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.ai-warning-item {
+    padding: 0.6rem 1rem;
+    border-left: 4px solid var(--danger-color);
+    background: #fff5f7;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #b5179e;
+}
+
+/* ============================================================
+   Notice Board
+   ============================================================ */
+
+.notice-card {
+    border-left: 4px solid var(--primary-color);
+    transition: var(--transition);
+}
+
+.notice-card.priority-URGENT { border-left-color: var(--danger-color); }
+.notice-card.priority-HIGH { border-left-color: var(--warning-color); }
+.notice-card.priority-NORMAL { border-left-color: var(--secondary-color); }
+.notice-card.priority-LOW { border-left-color: #ccc; }
+
+.notice-card:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* ============================================================
+   Utility
+   ============================================================ */
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #9ca3af;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+footer.app-footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.85rem;
+    color: #9ca3af;
+    border-top: 1px solid #e9ecef;
+    background: #fff;
+}

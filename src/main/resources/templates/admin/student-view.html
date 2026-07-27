@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='Student Profile')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='students')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='Student Profile')}"></header>
+
+        <div class="content-area">
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="avatar-circle mx-auto mb-3" style="width:80px;height:80px;font-size:2rem;"
+                                 th:text="${#strings.substring(student.firstName,0,1)}">A</div>
+                            <h5 th:text="${student.fullName}"></h5>
+                            <p class="text-muted mb-1" th:text="${student.enrollmentNo}"></p>
+                            <span class="badge bg-info" th:text="${student.department}"></span>
+                            <span class="badge bg-secondary" th:text="'Sem ' + ${student.semester}"></span>
+                            <hr>
+                            <div class="text-start small">
+                                <p><i class="bi bi-envelope me-2"></i><span th:text="${student.email}"></span></p>
+                                <p><i class="bi bi-telephone me-2"></i><span th:text="${student.phone ?: 'N/A'}"></span></p>
+                                <p><i class="bi bi-calendar me-2"></i>DOB: <span th:text="${student.dateOfBirth ?: 'N/A'}"></span></p>
+                                <p><i class="bi bi-people me-2"></i>Guardian: <span th:text="${student.guardianName ?: 'N/A'}"></span></p>
+                                <p><i class="bi bi-geo-alt me-2"></i><span th:text="${student.address ?: 'N/A'}"></span></p>
+                            </div>
+                            <a th:href="@{/admin/students/{id}/edit(id=${student.id})}" class="btn btn-primary btn-sm w-100">
+                                <i class="bi bi-pencil me-1"></i>Edit Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <div class="stat-card bg-gradient-info">
+                                <i class="bi bi-calendar-check-fill stat-icon"></i>
+                                <div class="stat-value" th:text="${attendanceSummary.attendancePercentage} + '%'">0%</div>
+                                <div class="stat-label">Overall Attendance</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-card bg-gradient-primary">
+                                <i class="bi bi-journal-check stat-icon"></i>
+                                <div class="stat-value" th:text="${student.averageMarks} + '%'">0%</div>
+                                <div class="stat-label">Average Marks</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header"><i class="bi bi-calendar-week me-2"></i>Subject-wise Attendance</div>
+                        <div class="card-body">
+                            <div th:each="entry : ${subjectAttendance}" class="mb-2">
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span th:text="${entry.key}"></span>
+                                    <strong th:text="${entry.value} + '%'"></strong>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar attendance-progress" role="progressbar"
+                                         th:style="'width:' + ${entry.value} + '%'"
+                                         th:attr="data-attendance-bar=${entry.value}"
+                                         th:data-attendance-bar="${entry.value}"></div>
+                                </div>
+                            </div>
+                            <div th:if="${#maps.isEmpty(subjectAttendance)}" class="empty-state">
+                                <i class="bi bi-calendar-x"></i>
+                                <p>No attendance records yet</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-journal-text me-2"></i>Marks Record</div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead>
+                                    <tr><th>Subject</th><th>Semester</th><th>Exam Type</th><th>Marks</th><th>Grade</th></tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="m : ${marks}">
+                                        <td th:text="${m.subject}"></td>
+                                        <td th:text="'Sem ' + ${m.semester}"></td>
+                                        <td th:text="${m.examType}"></td>
+                                        <td th:text="${m.marksObtained} + '/' + ${m.maxMarks}"></td>
+                                        <td><span class="badge" th:classappend="'badge-grade-' + ${m.grade}" th:text="${m.grade}"></span></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(marks)}">
+                                        <td colspan="5" class="text-center text-muted py-3">No marks recorded yet</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a th:href="@{/admin/students}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Students
+            </a>
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+</body>
+</html>

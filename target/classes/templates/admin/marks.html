@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='Marks Management')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='marks')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='Marks and Results Management')}"></header>
+
+        <div class="content-area">
+
+            <div class="card">
+                <div class="card-header"><i class="bi bi-journal-check me-2"></i>Select Class to View Marks</div>
+                <div class="card-body">
+                    <form method="get" action="#" id="filterForm" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Department</label>
+                            <select class="form-select" id="deptSelect">
+                                <option value="">Select Department</option>
+                                <option th:each="d : ${departments}" th:value="${d}" th:text="${d}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Semester</label>
+                            <select class="form-select" id="semSelect">
+                                <option value="">Select Semester</option>
+                                <option th:each="i : ${#numbers.sequence(1,8)}" th:value="${i}" th:text="'Semester ' + ${i}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="button" class="btn btn-primary w-100" onclick="goToStudentList()">
+                                <i class="bi bi-search me-1"></i> View Students
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-3">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                Select a department and semester, then navigate to individual student profiles
+                to view their complete marks records. Faculty members can upload and edit marks
+                through the Faculty portal.
+            </div>
+
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+
+<script th:inline="javascript">
+    function goToStudentList() {
+        const dept = document.getElementById('deptSelect').value;
+        const sem = document.getElementById('semSelect').value;
+        if (!dept || !sem) {
+            alert('Please select both department and semester');
+            return;
+        }
+        window.location.href = '/admin/students?search=' + encodeURIComponent(dept);
+    }
+</script>
+</body>
+</html>

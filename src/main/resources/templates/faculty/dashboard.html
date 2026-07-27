@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='Dashboard')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='dashboard')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='Faculty Dashboard')}"></header>
+
+        <div class="content-area">
+            <div th:replace="~{common/layout :: alerts}"></div>
+
+            <div class="card mb-4">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="avatar-circle" style="width:60px;height:60px;font-size:1.5rem;"
+                         th:text="${#strings.substring(faculty.firstName,0,1)}">A</div>
+                    <div>
+                        <h5 class="mb-0" th:text="'Welcome, ' + ${faculty.fullName}"></h5>
+                        <p class="text-muted mb-0">
+                            <span th:text="${faculty.designation}"></span> -
+                            <span th:text="${faculty.department}"></span> |
+                            ID: <span th:text="${faculty.employeeId}"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="stat-card bg-gradient-primary">
+                        <i class="bi bi-people-fill stat-icon"></i>
+                        <div class="stat-value" th:text="${totalStudents}">0</div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card bg-gradient-success">
+                        <i class="bi bi-calendar-check-fill stat-icon"></i>
+                        <div class="stat-value">Mark Now</div>
+                        <a th:href="@{/faculty/attendance}" class="stretched-link"></a>
+                        <div class="stat-label">Today's Attendance</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card bg-gradient-info">
+                        <i class="bi bi-journal-check stat-icon"></i>
+                        <div class="stat-value">Upload</div>
+                        <a th:href="@{/faculty/marks}" class="stretched-link"></a>
+                        <div class="stat-label">Marks Entry</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-lightning-charge-fill me-2"></i>Quick Actions</div>
+                        <div class="card-body d-grid gap-2">
+                            <a th:href="@{/faculty/attendance}" class="btn btn-outline-primary text-start">
+                                <i class="bi bi-calendar-check-fill me-2"></i>Mark Today's Attendance
+                            </a>
+                            <a th:href="@{/faculty/attendance/reports}" class="btn btn-outline-info text-start">
+                                <i class="bi bi-bar-chart-fill me-2"></i>View Attendance Reports
+                            </a>
+                            <a th:href="@{/faculty/marks}" class="btn btn-outline-success text-start">
+                                <i class="bi bi-pencil-square me-2"></i>Upload Student Marks
+                            </a>
+                            <a th:href="@{/faculty/profile}" class="btn btn-outline-secondary text-start">
+                                <i class="bi bi-person-circle me-2"></i>View My Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-megaphone-fill me-2"></i>Latest Notices</div>
+                        <div class="card-body">
+                            <div th:each="n : ${notices}" class="card notice-card mb-2 p-2"
+                                 th:classappend="'priority-' + ${n.priority}">
+                                <strong th:text="${n.title}"></strong>
+                                <p class="mb-0 small text-muted" th:text="${#strings.abbreviate(n.content, 100)}"></p>
+                            </div>
+                            <div th:if="${#lists.isEmpty(notices)}" class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <p>No notices available</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+</body>
+</html>

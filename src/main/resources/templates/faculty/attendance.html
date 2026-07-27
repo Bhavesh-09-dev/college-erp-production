@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='Mark Attendance')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='attendance')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='Mark Attendance')}"></header>
+
+        <div class="content-area">
+            <div th:replace="~{common/layout :: alerts}"></div>
+
+            <!-- Class Selection -->
+            <div class="card mb-3">
+                <div class="card-header"><i class="bi bi-filter-circle-fill me-2"></i>Select Class</div>
+                <div class="card-body">
+                    <form method="get" th:action="@{/faculty/attendance}" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Department</label>
+                            <select class="form-select" name="department" required>
+                                <option value="">Select Department</option>
+                                <option th:each="d : ${departments}" th:value="${d}" th:text="${d}"
+                                        th:selected="${d == selectedDepartment}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Semester</label>
+                            <select class="form-select" name="semester" required>
+                                <option value="">Select Semester</option>
+                                <option th:each="i : ${#numbers.sequence(1,8)}" th:value="${i}"
+                                        th:text="'Semester ' + ${i}" th:selected="${i == selectedSemester}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Subject</label>
+                            <input type="text" class="form-control" name="subject" th:value="${selectedSubject}"
+                                   placeholder="e.g. Data Structures" required>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-search me-1"></i> Load Students
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Attendance Marking Form -->
+            <div class="card" th:if="${!#lists.isEmpty(students)}">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <span>
+                        <i class="bi bi-calendar-check-fill me-2"></i>
+                        Mark Attendance - <span th:text="${selectedDepartment}"></span> | Semester <span th:text="${selectedSemester}"></span> | <span th:text="${selectedSubject}"></span>
+                    </span>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-success" onclick="markAllPresent()">
+                            <i class="bi bi-check-all me-1"></i>Mark All Present
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="markAllAbsent()">
+                            <i class="bi bi-x-circle me-1"></i>Mark All Absent
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <!-- Live Counts -->
+                    <div class="row g-2 mb-3 text-center">
+                        <div class="col-3">
+                            <div class="badge bg-success p-2 w-100">Present: <span id="presentCount">0</span></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="badge bg-danger p-2 w-100">Absent: <span id="absentCount">0</span></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="badge bg-warning text-dark p-2 w-100">Late: <span id="lateCount">0</span></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="badge bg-secondary p-2 w-100">Excused: <span id="excusedCount">0</span></div>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/faculty/attendance/bulk}" method="post">
+                        <input type="hidden" name="subject" th:value="${selectedSubject}">
+                        <input type="hidden" name="department" th:value="${selectedDepartment}">
+                        <input type="hidden" name="semester" th:value="${selectedSemester}">
+
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-control" style="max-width:200px;" name="attendanceDate"
+                                   th:value="${today}" required>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                <tr>
+                                    <th>Enrollment No</th>
+                                    <th>Name</th>
+                                    <th style="width:200px;">Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="student, iter : ${students}">
+                                    <td th:text="${student.enrollmentNo}"></td>
+                                    <td th:text="${student.fullName}"></td>
+                                    <td>
+                                        <input type="hidden" name="studentIds" th:value="${student.id}">
+                                        <select class="form-select form-select-sm attendance-status-select" name="statuses">
+                                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"
+                                                    th:selected="${s.name() == 'PRESENT'}"></option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i> Submit Attendance
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(students)}" class="card">
+                <div class="card-body empty-state">
+                    <i class="bi bi-people"></i>
+                    <p>Select a department, semester, and subject to load students</p>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+<script th:src="@{/js/attendance.js}"></script>
+</body>
+</html>

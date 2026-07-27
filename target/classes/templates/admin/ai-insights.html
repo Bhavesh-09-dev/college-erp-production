@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='AI Insights')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='ai-insights')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='AI-Powered Insights and Predictions')}"></header>
+
+        <div class="content-area">
+
+            <div class="alert alert-info">
+                <i class="bi bi-cpu-fill me-2"></i>
+                These insights are generated using rule-based statistical algorithms analyzing
+                attendance patterns, marks trends, and performance metrics. No external AI APIs are used.
+            </div>
+
+            <!-- At Risk Students -->
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Students Requiring Immediate Attention
+                    (<span th:text="${#lists.size(atRiskStudents)}">0</span>)
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>Enrollment No</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Attendance</th>
+                                <th>Avg Marks</th>
+                                <th>Risk Level</th>
+                                <th>Overall Risk</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="p : ${atRiskStudents}">
+                                <td><strong th:text="${p.enrollmentNo}"></strong></td>
+                                <td th:text="${p.studentName}"></td>
+                                <td th:text="${p.department}"></td>
+                                <td>
+                                    <span class="badge" th:classappend="${p.attendancePercentage < 60} ? 'bg-danger' :
+                                          (${p.attendancePercentage < 75} ? 'bg-warning text-dark' : 'bg-success')"
+                                          th:text="${p.attendancePercentage} + '%'"></span>
+                                </td>
+                                <td>
+                                    <span class="badge" th:classappend="${p.averageMarks < 40} ? 'bg-danger' :
+                                          (${p.averageMarks < 60} ? 'bg-warning text-dark' : 'bg-success')"
+                                          th:text="${p.averageMarks} + '%'"></span>
+                                </td>
+                                <td>
+                                    <span class="badge" th:classappend="'risk-badge-' + ${p.attendanceRisk}"
+                                          th:text="${p.attendanceRisk}"></span>
+                                </td>
+                                <td>
+                                    <span class="badge" th:classappend="'risk-badge-' + ${p.overallRisk}"
+                                          th:text="${p.overallRisk}"></span>
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/admin/ai-insights/{id}(id=${p.studentId})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>Details
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(atRiskStudents)}">
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    <i class="bi bi-emoji-smile d-block" style="font-size:2rem;"></i>
+                                    No students at risk! Everyone is performing well 🎉
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Predictions -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-graph-up-arrow me-2"></i>All Student Performance Predictions
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>Enrollment No</th>
+                                <th>Name</th>
+                                <th>Performance Score</th>
+                                <th>Category</th>
+                                <th>Predicted Grade</th>
+                                <th>Attendance Trend</th>
+                                <th>Performance Trend</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="p : ${allPredictions}">
+                                <td><strong th:text="${p.enrollmentNo}"></strong></td>
+                                <td th:text="${p.studentName}"></td>
+                                <td>
+                                    <div class="progress" style="width:100px;">
+                                        <div class="progress-bar bg-primary" th:style="'width:' + ${p.performanceScore} + '%'"></div>
+                                    </div>
+                                    <small th:text="${p.performanceScore} + '%'"></small>
+                                </td>
+                                <td>
+                                    <span class="badge" th:classappend="${p.performanceCategory == 'EXCELLENT'} ? 'bg-success' :
+                                            (${p.performanceCategory == 'GOOD'} ? 'bg-info' :
+                                            (${p.performanceCategory == 'AVERAGE'} ? 'bg-warning text-dark' : 'bg-danger'))"
+                                          th:text="${p.performanceCategory}"></span>
+                                </td>
+                                <td th:text="${p.predictedGrade}"></td>
+                                <td>
+                                    <i th:class="${p.attendanceTrend == 'IMPROVING'} ? 'bi bi-arrow-up-circle-fill text-success' :
+                                                  (${p.attendanceTrend == 'DECLINING'} ? 'bi bi-arrow-down-circle-fill text-danger' : 'bi bi-dash-circle-fill text-secondary')"></i>
+                                    <span th:text="${p.attendanceTrend}"></span>
+                                </td>
+                                <td>
+                                    <i th:class="${p.performanceTrend == 'IMPROVING'} ? 'bi bi-arrow-up-circle-fill text-success' :
+                                                  (${p.performanceTrend == 'DECLINING'} ? 'bi bi-arrow-down-circle-fill text-danger' : 'bi bi-dash-circle-fill text-secondary')"></i>
+                                    <span th:text="${p.performanceTrend}"></span>
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/admin/ai-insights/{id}(id=${p.studentId})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>Details
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+</body>
+</html>

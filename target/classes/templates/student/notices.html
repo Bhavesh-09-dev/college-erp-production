@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='Notice Board')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='notices')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='Notice Board')}"></header>
+
+        <div class="content-area">
+
+            <div class="card">
+                <div class="card-header"><i class="bi bi-megaphone-fill me-2"></i>All Notices</div>
+                <div class="card-body">
+                    <div th:each="n : ${notices}" class="card notice-card mb-3" th:classappend="'priority-' + ${n.priority}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                                <h5 class="mb-1" th:text="${n.title}"></h5>
+                                <span class="badge" th:classappend="${n.priority.name() == 'URGENT'} ? 'bg-danger' :
+                                        (${n.priority.name() == 'HIGH'} ? 'bg-warning text-dark' :
+                                        (${n.priority.name() == 'NORMAL'} ? 'bg-info' : 'bg-secondary'))"
+                                      th:text="${n.priority}"></span>
+                            </div>
+                            <p class="mb-2" th:text="${n.content}"></p>
+                            <small class="text-muted">
+                                Posted by <span th:text="${n.postedBy}"></span> on
+                                <span th:text="${#temporals.format(n.createdAt, 'dd MMM yyyy, hh:mm a')}"></span>
+                            </small>
+                        </div>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(notices)}" class="empty-state">
+                        <i class="bi bi-megaphone"></i>
+                        <p>No notices available</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title=${isEdit} ? 'Edit Faculty' : 'Add Faculty')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='faculty')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title=${isEdit} ? 'Edit Faculty' : 'Add New Faculty')}"></header>
+
+        <div class="content-area">
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-person-plus-fill me-2"></i>
+                    <span th:text="${isEdit} ? 'Edit Faculty Details' : 'Faculty Registration Form'"></span>
+                </div>
+                <div class="card-body">
+
+                    <form th:action="${isEdit} ? @{/admin/faculty/{id}(id=${faculty.id})} : @{/admin/faculty}"
+                          th:object="${faculty}" method="post">
+
+                        <h6 class="section-title">Personal Information</h6>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Employee ID *</label>
+                                <input type="text" class="form-control" th:field="*{employeeId}"
+                                       th:readonly="${isEdit}" placeholder="e.g. FAC006">
+                                <div class="text-danger small" th:if="${#fields.hasErrors('employeeId')}"
+                                     th:errors="*{employeeId}"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">First Name *</label>
+                                <input type="text" class="form-control" th:field="*{firstName}">
+                                <div class="text-danger small" th:if="${#fields.hasErrors('firstName')}"
+                                     th:errors="*{firstName}"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" th:field="*{lastName}">
+                                <div class="text-danger small" th:if="${#fields.hasErrors('lastName')}"
+                                     th:errors="*{lastName}"></div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Email *</label>
+                                <input type="email" class="form-control" th:field="*{email}">
+                                <div class="text-danger small" th:if="${#fields.hasErrors('email')}"
+                                     th:errors="*{email}"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" th:field="*{phone}" placeholder="10-digit number">
+                                <div class="text-danger small" th:if="${#fields.hasErrors('phone')}"
+                                     th:errors="*{phone}"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Gender</label>
+                                <select class="form-select" th:field="*{gender}">
+                                    <option value="">Select</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" th:field="*{dateOfBirth}">
+                            </div>
+                        </div>
+
+                        <h6 class="section-title">Professional Information</h6>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Department *</label>
+                                <input type="text" class="form-control" th:field="*{department}" placeholder="e.g. Computer Science">
+                                <div class="text-danger small" th:if="${#fields.hasErrors('department')}"
+                                     th:errors="*{department}"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Designation *</label>
+                                <select class="form-select" th:field="*{designation}">
+                                    <option value="">Select</option>
+                                    <option value="Professor">Professor</option>
+                                    <option value="Associate Professor">Associate Professor</option>
+                                    <option value="Assistant Professor">Assistant Professor</option>
+                                    <option value="HOD">HOD</option>
+                                    <option value="Lecturer">Lecturer</option>
+                                </select>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('designation')}"
+                                     th:errors="*{designation}"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Specialization</label>
+                                <input type="text" class="form-control" th:field="*{specialization}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Qualification</label>
+                                <input type="text" class="form-control" th:field="*{qualification}" placeholder="e.g. Ph.D, M.Tech">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Experience (Years)</label>
+                                <input type="number" class="form-control" th:field="*{experienceYears}" min="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Date of Joining</label>
+                                <input type="date" class="form-control" th:field="*{dateOfJoining}">
+                            </div>
+                            <div class="col-md-4" th:if="${isEdit}">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" th:field="*{active}">
+                                    <option th:value="true">Active</option>
+                                    <option th:value="false">Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" th:field="*{address}" rows="2"></textarea>
+                            </div>
+                        </div>
+
+                        <th:block th:if="${!isEdit}">
+                            <h6 class="section-title">Login Credentials (Optional)</h6>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" class="form-control" th:field="*{username}"
+                                           placeholder="Default: employee ID (lowercase)">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Password</label>
+                                    <input type="password" class="form-control" th:field="*{password}"
+                                           placeholder="Default: faculty123">
+                                </div>
+                            </div>
+                        </th:block>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>
+                                <span th:text="${isEdit} ? 'Update Faculty' : 'Register Faculty'"></span>
+                            </button>
+                            <a th:href="@{/admin/faculty}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+</body>
+</html>

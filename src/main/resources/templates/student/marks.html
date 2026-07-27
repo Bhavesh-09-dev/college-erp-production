@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='My Marks')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='marks')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='My Marks')}"></header>
+
+        <div class="content-area">
+
+            <div class="card mb-3">
+                <div class="card-header"><i class="bi bi-graph-up me-2"></i>Subject-wise Performance</div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="marksChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><i class="bi bi-journal-text me-2"></i>Detailed Marks</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                            <tr><th>Subject</th><th>Semester</th><th>Exam Type</th><th>Marks</th><th>Percentage</th><th>Grade</th><th>Status</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="m : ${marks}">
+                                <td th:text="${m.subject}"></td>
+                                <td th:text="'Sem ' + ${m.semester}"></td>
+                                <td th:text="${m.examType}"></td>
+                                <td th:text="${m.marksObtained} + '/' + ${m.maxMarks}"></td>
+                                <td th:text="${#numbers.formatDecimal(m.percentage,1,1)} + '%'"></td>
+                                <td><span class="badge" th:classappend="'badge-grade-' + ${m.grade}" th:text="${m.grade}"></span></td>
+                                <td>
+                                    <span class="badge" th:classappend="${m.pass} ? 'bg-success' : 'bg-danger'"
+                                          th:text="${m.pass} ? 'PASS' : 'FAIL'"></span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(marks)}">
+                                <td colspan="7" class="text-center text-muted py-3">No marks recorded yet</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const subjectPerformance = /*[[${subjectPerformance}]]*/ {};
+    /*]]>*/
+
+    new Chart(document.getElementById('marksChart'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(subjectPerformance),
+            datasets: [{
+                label: 'Average %',
+                data: Object.values(subjectPerformance),
+                backgroundColor: Object.values(subjectPerformance).map(v => {
+                    if (v >= 75) return '#06d6a0';
+                    if (v >= 50) return '#ffd166';
+                    return '#ef476f';
+                })
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, max: 100 } },
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>
+</body>
+</html>

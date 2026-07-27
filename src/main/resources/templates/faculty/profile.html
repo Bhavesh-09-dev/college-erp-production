@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='My Profile')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='profile')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='My Profile')}"></header>
+
+        <div class="content-area">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="avatar-circle mx-auto mb-3" style="width:90px;height:90px;font-size:2.2rem;"
+                                 th:text="${#strings.substring(faculty.firstName,0,1)}">A</div>
+                            <h5 th:text="${faculty.fullName}"></h5>
+                            <p class="text-muted mb-1" th:text="${faculty.employeeId}"></p>
+                            <span class="badge bg-primary" th:text="${faculty.designation}"></span>
+                            <span class="badge bg-info" th:text="${faculty.department}"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-person-lines-fill me-2"></i>Profile Details</div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Email</label>
+                                    <p th:text="${faculty.email}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Phone</label>
+                                    <p th:text="${faculty.phone ?: 'N/A'}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Department</label>
+                                    <p th:text="${faculty.department}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Designation</label>
+                                    <p th:text="${faculty.designation}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Specialization</label>
+                                    <p th:text="${faculty.specialization ?: 'N/A'}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Qualification</label>
+                                    <p th:text="${faculty.qualification ?: 'N/A'}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Experience</label>
+                                    <p th:text="${faculty.experienceYears != null ? faculty.experienceYears + ' years' : 'N/A'}"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Date of Joining</label>
+                                    <p th:text="${faculty.dateOfJoining ?: 'N/A'}"></p>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-muted small">Address</label>
+                                    <p th:text="${faculty.address ?: 'N/A'}"></p>
+                                </div>
+                            </div>
+                            <div class="alert alert-info mt-2">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                To update your profile information, please contact the administrator.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+</body>
+</html>

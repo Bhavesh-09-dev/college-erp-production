@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title=${isEdit} ? 'Edit Notice' : 'Create Notice')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='notices')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title=${isEdit} ? 'Edit Notice' : 'Create New Notice')}"></header>
+
+        <div class="content-area">
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-megaphone-fill me-2"></i>
+                    <span th:text="${isEdit} ? 'Edit Notice' : 'Create Notice'"></span>
+                </div>
+                <div class="card-body">
+
+                    <form th:action="${isEdit} ? @{/admin/notices/{id}(id=${notice.id})} : @{/admin/notices}"
+                          th:object="${notice}" method="post">
+
+                        <div class="mb-3">
+                            <label class="form-label">Title *</label>
+                            <input type="text" class="form-control" th:field="*{title}" placeholder="Notice title">
+                            <div class="text-danger small" th:if="${#fields.hasErrors('title')}"
+                                 th:errors="*{title}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Content *</label>
+                            <textarea class="form-control" th:field="*{content}" rows="5" placeholder="Notice content..."></textarea>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('content')}"
+                                 th:errors="*{content}"></div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Priority</label>
+                                <select class="form-select" th:field="*{priority}">
+                                    <option th:each="p : ${priorities}" th:value="${p}" th:text="${p}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Target Audience</label>
+                                <select class="form-select" th:field="*{targetAudience}">
+                                    <option th:each="a : ${audiences}" th:value="${a}" th:text="${a}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Expiry Date (Optional)</label>
+                                <input type="date" class="form-control" th:field="*{expiryDate}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3" th:if="${isEdit}">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" th:field="*{active}">
+                                <option th:value="true">Active</option>
+                                <option th:value="false">Inactive</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>
+                                <span th:text="${isEdit} ? 'Update Notice' : 'Publish Notice'"></span>
+                            </button>
+                            <a th:href="@{/admin/notices}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+</body>
+</html>

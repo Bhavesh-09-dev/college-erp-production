@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='Marks Management')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='marks')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='Marks and Results Management')}"></header>
+
+        <div class="content-area">
+            <div th:replace="~{common/layout :: alerts}"></div>
+
+            <div class="card mb-3">
+                <div class="card-header"><i class="bi bi-filter-circle-fill me-2"></i>Select Class</div>
+                <div class="card-body">
+                    <form method="get" th:action="@{/faculty/marks}" class="row g-3">
+                        <div class="col-md-5">
+                            <label class="form-label">Department</label>
+                            <select class="form-select" name="department" required>
+                                <option value="">Select Department</option>
+                                <option th:each="d : ${departments}" th:value="${d}" th:text="${d}"
+                                        th:selected="${d == selectedDepartment}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Semester</label>
+                            <select class="form-select" name="semester" required>
+                                <option value="">Select Semester</option>
+                                <option th:each="i : ${#numbers.sequence(1,8)}" th:value="${i}"
+                                        th:text="'Semester ' + ${i}" th:selected="${i == selectedSemester}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-search me-1"></i> View
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Upload Marks Form -->
+            <div class="card mb-3" th:if="${!#lists.isEmpty(students)}">
+                <div class="card-header"><i class="bi bi-upload me-2"></i>Upload Marks</div>
+                <div class="card-body">
+                    <form th:action="@{/faculty/marks/upload}" method="post" class="row g-3">
+                        <input type="hidden" name="department" th:value="${selectedDepartment}">
+
+                        <div class="col-md-3">
+                            <label class="form-label">Student</label>
+                            <select class="form-select" name="studentId" required>
+                                <option value="">Select Student</option>
+                                <option th:each="s : ${students}" th:value="${s.id}"
+                                        th:text="${s.enrollmentNo} + ' - ' + ${s.fullName}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Subject</label>
+                            <input type="text" class="form-control" name="subject" placeholder="Subject name" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Exam Type</label>
+                            <select class="form-select" name="examType" required>
+                                <option th:each="e : ${examTypes}" th:value="${e}" th:text="${e}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Marks Obtained</label>
+                            <input type="number" step="0.1" min="0" max="100" class="form-control" name="marksObtained" required>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label">Max Marks</label>
+                            <input type="number" step="0.1" min="1" max="100" class="form-control" name="maxMarks" value="100" required>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label">Semester</label>
+                            <input type="number" class="form-control" name="semester" th:value="${selectedSemester}" min="1" max="8" required>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-check"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Students List -->
+            <div class="card" th:if="${!#lists.isEmpty(students)}">
+                <div class="card-header">
+                    <i class="bi bi-people-fill me-2"></i>
+                    Students - <span th:text="${selectedDepartment}"></span> | Semester <span th:text="${selectedSemester}"></span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                            <tr><th>Enrollment No</th><th>Name</th><th class="text-end">Action</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="s : ${students}">
+                                <td th:text="${s.enrollmentNo}"></td>
+                                <td th:text="${s.fullName}"></td>
+                                <td class="text-end">
+                                    <a th:href="@{/faculty/marks/student/{id}(id=${s.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>View Marks
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(students)}" class="card">
+                <div class="card-body empty-state">
+                    <i class="bi bi-journal-text"></i>
+                    <p>Select a department and semester to manage marks</p>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+</body>
+</html>

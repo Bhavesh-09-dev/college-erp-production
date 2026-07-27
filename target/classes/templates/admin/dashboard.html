@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='Dashboard')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='dashboard')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='Admin Dashboard')}"></header>
+
+        <div class="content-area">
+            <div th:replace="~{common/layout :: alerts}"></div>
+
+            <!-- Stat Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card bg-gradient-primary">
+                        <i class="bi bi-people-fill stat-icon"></i>
+                        <div class="stat-value" th:text="${dashboard.totalStudents}">0</div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card bg-gradient-success">
+                        <i class="bi bi-person-badge-fill stat-icon"></i>
+                        <div class="stat-value" th:text="${dashboard.totalFaculty}">0</div>
+                        <div class="stat-label">Total Faculty</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card bg-gradient-info">
+                        <i class="bi bi-calendar-check-fill stat-icon"></i>
+                        <div class="stat-value" th:text="${dashboard.overallAttendancePercentage} + '%'">0%</div>
+                        <div class="stat-label">Avg Attendance</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card bg-gradient-warning">
+                        <i class="bi bi-exclamation-triangle-fill stat-icon"></i>
+                        <div class="stat-value" th:text="${dashboard.studentsAtRisk}">0</div>
+                        <div class="stat-label">Students At Risk (&lt;75%)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card bg-gradient-danger">
+                        <i class="bi bi-emoji-frown-fill stat-icon"></i>
+                        <div class="stat-value" th:text="${dashboard.studentsInDanger}">0</div>
+                        <div class="stat-label">Critical Attendance (&lt;60%)</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card bg-gradient-primary">
+                        <i class="bi bi-journal-check stat-icon"></i>
+                        <div class="stat-value" th:text="${dashboard.overallAverageMarks} + '%'">0%</div>
+                        <div class="stat-label">Avg Marks</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card bg-gradient-success">
+                        <i class="bi bi-person-check-fill stat-icon"></i>
+                        <div class="stat-value" th:text="${dashboard.activeStudents}">0</div>
+                        <div class="stat-label">Active Students</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card bg-gradient-info">
+                        <i class="bi bi-megaphone-fill stat-icon"></i>
+                        <div class="stat-value" th:text="${dashboard.totalNotices}">0</div>
+                        <div class="stat-label">Active Notices</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div class="row g-3 mb-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="bi bi-bar-chart-fill me-2"></i>Students by Department
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="deptChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="bi bi-pie-chart-fill me-2"></i>Grade Distribution
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="gradeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="row g-3 mb-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="bi bi-graph-up me-2"></i>Monthly Attendance Trend
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="attendanceTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="bi bi-bar-chart-line-fill me-2"></i>Average Marks by Subject
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="subjectMarksChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tables Row -->
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-exclamation-triangle-fill me-2 text-warning"></i>Students At Risk (Attendance &lt; 75%)</span>
+                            <a th:href="@{/admin/ai-insights}" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead>
+                                    <tr><th>Enrollment No</th><th>Name</th><th>Attendance</th></tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="s : ${dashboard.atRiskStudents}">
+                                        <td th:text="${s.enrollmentNo}"></td>
+                                        <td th:text="${s.firstName}"></td>
+                                        <td>
+                                            <span class="badge bg-danger" th:text="${s.attendancePercentage} + '%'"></span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(dashboard.atRiskStudents)}">
+                                        <td colspan="3" class="text-center text-muted py-3">No students at risk 🎉</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-megaphone-fill me-2"></i>Recent Notices</span>
+                            <a th:href="@{/admin/notices}" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="card-body">
+                            <div th:each="n : ${dashboard.recentNotices}" class="notice-card card mb-2 p-2"
+                                 th:classappend="'priority-' + ${n.priority}">
+                                <strong th:text="${n.title}"></strong>
+                                <small class="text-muted d-block" th:text="${#temporals.format(n.createdAt, 'dd MMM yyyy')}"></small>
+                            </div>
+                            <div th:if="${#lists.isEmpty(dashboard.recentNotices)}" class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <p>No notices posted yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="app-footer">
+            &copy; 2026 Smart College ERP Portal. All rights reserved.
+        </footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const deptData = /*[[${dashboard.studentsByDepartment}]]*/ {};
+    const gradeData = /*[[${dashboard.gradeDistribution}]]*/ {};
+    const monthLabels = /*[[${dashboard.monthLabels}]]*/ [];
+    const monthlyAttendance = /*[[${dashboard.monthlyAttendance}]]*/ [];
+    const subjectMarksData = /*[[${dashboard.avgMarksBySubject}]]*/ {};
+    /*]]>*/
+
+    // Department Chart
+    new Chart(document.getElementById('deptChart'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(deptData),
+            datasets: [{
+                label: 'Students',
+                data: Object.values(deptData),
+                backgroundColor: ['#4361ee','#4cc9f0','#06d6a0','#ffd166','#ef476f','#3a0ca3']
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+
+    // Grade Distribution Chart
+    new Chart(document.getElementById('gradeChart'), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(gradeData),
+            datasets: [{
+                data: Object.values(gradeData),
+                backgroundColor: ['#06d6a0','#4cc9f0','#4361ee','#3a0ca3','#ffd166','#f4a261','#ef476f']
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // Monthly Attendance Trend
+    new Chart(document.getElementById('attendanceTrendChart'), {
+        type: 'line',
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: 'Attendance %',
+                data: monthlyAttendance,
+                borderColor: '#4361ee',
+                backgroundColor: 'rgba(67,97,238,0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, max: 100 } }
+        }
+    });
+
+    // Subject-wise Marks Chart
+    new Chart(document.getElementById('subjectMarksChart'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(subjectMarksData),
+            datasets: [{
+                label: 'Avg %',
+                data: Object.values(subjectMarksData),
+                backgroundColor: '#4cc9f0'
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: false,
+            scales: { x: { beginAtZero: true, max: 100 } },
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>
+</body>
+</html>

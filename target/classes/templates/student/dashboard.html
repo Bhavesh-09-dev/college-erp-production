@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='Dashboard')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='dashboard')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='Student Dashboard')}"></header>
+
+        <div class="content-area">
+            <div th:replace="~{common/layout :: alerts}"></div>
+
+            <div class="card mb-4">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="avatar-circle" style="width:60px;height:60px;font-size:1.5rem;"
+                         th:text="${#strings.substring(student.firstName,0,1)}">A</div>
+                    <div>
+                        <h5 class="mb-0" th:text="'Welcome, ' + ${student.fullName}"></h5>
+                        <p class="text-muted mb-0">
+                            <span th:text="${student.enrollmentNo}"></span> |
+                            <span th:text="${student.department}"></span> |
+                            Semester <span th:text="${student.semester}"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts based on attendance -->
+            <div th:if="${attendanceSummary.attendancePercentage < 60}" class="alert alert-danger">
+                <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                <strong>Critical:</strong> Your overall attendance is
+                <span th:text="${attendanceSummary.attendancePercentage} + '%'"></span>,
+                below the 60% minimum. You may be barred from examinations!
+            </div>
+            <div th:if="${attendanceSummary.attendancePercentage >= 60 and attendanceSummary.attendancePercentage < 75}" class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong>Warning:</strong> Your overall attendance is
+                <span th:text="${attendanceSummary.attendancePercentage} + '%'"></span>,
+                below the required 75%. Please attend classes regularly.
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card bg-gradient-info">
+                        <i class="bi bi-calendar-check-fill stat-icon"></i>
+                        <div class="stat-value" th:text="${attendanceSummary.attendancePercentage} + '%'">0%</div>
+                        <div class="stat-label">Overall Attendance</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card bg-gradient-primary">
+                        <i class="bi bi-journal-check stat-icon"></i>
+                        <div class="stat-value" th:text="${student.averageMarks} + '%'">0%</div>
+                        <div class="stat-label">Average Marks</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card bg-gradient-success">
+                        <i class="bi bi-check-circle-fill stat-icon"></i>
+                        <div class="stat-value" th:text="${attendanceSummary.presentCount}">0</div>
+                        <div class="stat-label">Classes Attended</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card bg-gradient-warning">
+                        <i class="bi bi-trophy-fill stat-icon"></i>
+                        <div class="stat-value" th:text="${student.performanceCategory ?: 'N/A'}">-</div>
+                        <div class="stat-label">Performance</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-bar-chart-fill me-2"></i>Subject-wise Attendance</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="attendanceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-graph-up me-2"></i>Subject-wise Performance</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="marksChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-megaphone-fill me-2"></i>Latest Notices</span>
+                    <a th:href="@{/student/notices}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div th:each="n : ${notices}" class="card notice-card mb-2 p-2"
+                         th:classappend="'priority-' + ${n.priority}">
+                        <strong th:text="${n.title}"></strong>
+                        <p class="mb-0 small text-muted" th:text="${#strings.abbreviate(n.content, 120)}"></p>
+                    </div>
+                    <div th:if="${#lists.isEmpty(notices)}" class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <p>No notices available</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const attendanceData = /*[[${subjectAttendance}]]*/ {};
+    const marksData = /*[[${subjectMarks}]]*/ {};
+    /*]]>*/
+
+    new Chart(document.getElementById('attendanceChart'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(attendanceData),
+            datasets: [{
+                label: 'Attendance %',
+                data: Object.values(attendanceData),
+                backgroundColor: Object.values(attendanceData).map(v => v < 75 ? '#ef476f' : '#06d6a0')
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, max: 100 } },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    new Chart(document.getElementById('marksChart'), {
+        type: 'radar',
+        data: {
+            labels: Object.keys(marksData),
+            datasets: [{
+                label: 'Marks %',
+                data: Object.values(marksData),
+                backgroundColor: 'rgba(67,97,238,0.2)',
+                borderColor: '#4361ee',
+                pointBackgroundColor: '#4361ee'
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { r: { beginAtZero: true, max: 100 } }
+        }
+    });
+</script>
+</body>
+</html>

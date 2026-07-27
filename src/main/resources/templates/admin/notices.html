@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{common/layout :: head(title='Notice Board')}"></head>
+<body>
+<div class="app-wrapper">
+    <nav th:replace="~{common/layout :: sidebar(activePage='notices')}"></nav>
+
+    <div class="main-content">
+        <header th:replace="~{common/layout :: topbar(title='Notice Board Management')}"></header>
+
+        <div class="content-area">
+            <div th:replace="~{common/layout :: alerts}"></div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-megaphone-fill me-2"></i>All Notices</span>
+                    <a th:href="@{/admin/notices/new}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle me-1"></i> Create Notice
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div th:each="n : ${notices}" class="card notice-card mb-3" th:classappend="'priority-' + ${n.priority}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                                <div>
+                                    <h5 class="mb-1" th:text="${n.title}"></h5>
+                                    <div class="d-flex gap-2 mb-2 flex-wrap">
+                                        <span class="badge" th:classappend="${n.priority.name() == 'URGENT'} ? 'bg-danger' :
+                                                (${n.priority.name() == 'HIGH'} ? 'bg-warning text-dark' :
+                                                (${n.priority.name() == 'NORMAL'} ? 'bg-info' : 'bg-secondary'))"
+                                              th:text="${n.priority}"></span>
+                                        <span class="badge bg-light text-dark" th:text="${n.targetAudience}"></span>
+                                        <span class="badge" th:classappend="${n.active} ? 'bg-success' : 'bg-secondary'"
+                                              th:text="${n.active} ? 'Active' : 'Inactive'"></span>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <a th:href="@{/admin/notices/{id}/edit(id=${n.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form th:action="@{/admin/notices/{id}/delete(id=${n.id})}" method="post"
+                                          class="d-inline confirm-delete" data-confirm-message="Delete this notice?">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <p class="mb-2" th:text="${n.content}"></p>
+                            <small class="text-muted">
+                                Posted by <span th:text="${n.postedBy}"></span> on
+                                <span th:text="${#temporals.format(n.createdAt, 'dd MMM yyyy, hh:mm a')}"></span>
+                                <span th:if="${n.expiryDate}"> | Expires: <span th:text="${n.expiryDate}"></span></span>
+                            </small>
+                        </div>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(notices)}" class="empty-state">
+                        <i class="bi bi-megaphone"></i>
+                        <p>No notices posted yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="app-footer">&copy; 2026 Smart College ERP Portal. All rights reserved.</footer>
+    </div>
+</div>
+
+<div th:replace="~{common/layout :: scripts}"></div>
+</body>
+</html>
